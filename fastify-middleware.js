@@ -1,5 +1,5 @@
 import { _AuthCallback, _Disconnect, _Disconnected, _GetAccreditations, _GetInfos, _Login } from "./actions";
-import { getAccessTokenExternal } from "./apis";
+import { getAccessTokenExternal, verify } from "./apis";
 
 import {
   LOGIN_URI,
@@ -46,8 +46,6 @@ export const applyFastifyHlpAuthMiddleware = (fastify, {
 
     const url = req.params["*"];
 
-
-    console.log("XXX", url, req.query)
     const isLieu =
       url === LOGIN_LIEU_URI ||
       url === AUTH_CALLBACK_LIEU_URI ||
@@ -89,6 +87,15 @@ export const applyFastifyHlpAuthMiddleware = (fastify, {
         break;
     }
   };
+
+  fastify.decorate("hlpAuthenticate", async function(request, reply) {
+    try {
+      const decoded = verify(config, request, reply, false);
+      request._USER = decoded;
+    } catch (err) {
+      throw new Error("Invalid user (auth bearer)");
+    }
+  });
 
   fastify.addHook('onRequest', authHook);
 };

@@ -117,7 +117,6 @@ export const verify = (config, req, res, returnResponse = true) => {
 
   if (!token) {
     if (returnResponse) throw new Error('Access denied');
-    // return false;
   }
 
   try {
@@ -125,7 +124,6 @@ export const verify = (config, req, res, returnResponse = true) => {
     return decoded;
   } catch (ex) {
     if (returnResponse) throw new Error('Invalid token');
-    // return false;
   }
 };
 
